@@ -1,6 +1,7 @@
 ﻿using JuliePro.Data;
 using JuliePro.Models;
 using JuliePro.Models.ViewModels;
+using JuliePro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,16 +11,37 @@ namespace JuliePro.Controllers
     public class TrainersController : Controller
     {
         private readonly JulieProDbContext _context;
+        private readonly IServiceBaseAsync<Trainer> _trainerService;
 
-        public TrainersController(JulieProDbContext context)
+
+        public TrainersController(JulieProDbContext context, IServiceBaseAsync<Trainer> trainerService)
         {
             _context = context;
+            _trainerService = trainerService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Filter(TrainerSearchViewModelFilter filter)
+        {
+            var trainers = await _trainerService.GetFilteredTrainersAsync(filter);
+
+            var certificationCenters = await _trainerService.GetCertificationCentersAsync();
+            ViewBag.CertificationCenters = new SelectList(certificationCenters);
+
+            return View("Index", trainers);
         }
 
         // GET: Trainers
         public async Task<IActionResult> Index()
         {
-            var trainers = _context.Trainer.Include(t => t.Speciality).OrderBy(t => t.FirstName).ThenBy(t => t.LastName);
+            var trainers = _context.Trainer
+                                   .Include(t => t.Speciality)
+                                   .OrderBy(t => t.FirstName)
+                                   .ThenBy(t => t.LastName);
+
+            var certificationCenters = await _trainerService.GetCertificationCentersAsync();
+            ViewBag.CertificationCenters = new SelectList(certificationCenters);
+
             return View(await trainers.ToListAsync());
         }
 

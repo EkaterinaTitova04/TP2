@@ -5,9 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Globalization;
+using JuliePro.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
+builder.Services.AddLocalization(options => options.ResourcesPath = "i18n");
 // Injecter la localisation ICI
 #region Localizer configuration
 CultureInfo[] supportedCultures = new[]
@@ -34,11 +37,14 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
+
+
 });
+
 builder.Services.AddDbContext<JulieProDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
 
-
+builder.Services.AddScoped(typeof(IServiceBaseAsync<>), typeof(IServiceBaseAsync<>));
 var app = builder.Build();
 
 var locOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
