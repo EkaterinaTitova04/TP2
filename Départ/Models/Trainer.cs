@@ -5,6 +5,7 @@ namespace JuliePro.Models
 {
     public class Trainer
     {
+        [Key]
         public int Id { get; set; }
         [StringLength(25, MinimumLength = 4)]
         public string FirstName { get; set; }
@@ -21,5 +22,10 @@ namespace JuliePro.Models
 
         [ValidateNever]
         public virtual List<Customer> Customers { get; set; }
+
+
+
+        public virtual ICollection<Certification> Certifications { get; set; } = new List<Certification>();
+
     }
 }

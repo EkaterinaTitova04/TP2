@@ -179,5 +179,21 @@ namespace JuliePro.Controllers
         {
           return (_context.Trainer?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        // GET: Trainers/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var trainer = await _context.Trainer
+                                        .Include(t => t.Speciality)
+                                        .Include(t => t.Certification)
+                                        .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (trainer == null)
+            {
+                return NotFound();
+            }
+
+            return View(trainer);
+        }
     }
 }
