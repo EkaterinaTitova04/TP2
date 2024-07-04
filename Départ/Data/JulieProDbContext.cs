@@ -27,5 +27,8 @@ namespace JuliePro.Data
         public DbSet<Objective>? Objective { get; set; }
         public DbSet<Certification>? Certifications { get; set; }
 
+        public DbSet<Record> Records { get; set; } 
+
+
     }
 }
