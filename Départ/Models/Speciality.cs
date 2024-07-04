@@ -6,7 +6,7 @@ namespace JuliePro.Models
     {
         public int Id { get; set; }
         [StringLength(20, MinimumLength = 5)]
-        public string Name { get; set; }
-        public virtual List<Trainer> Trainers { get; set; }
+        public string? Name { get; set; }
+        public virtual List<Trainer>? Trainers { get; set; }
     }
 }

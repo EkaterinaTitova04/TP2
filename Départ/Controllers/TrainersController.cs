@@ -5,6 +5,9 @@ using JuliePro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace JuliePro.Controllers
 {
@@ -32,18 +35,32 @@ namespace JuliePro.Controllers
         }
 
         // GET: Trainers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, int? page)
         {
-            var trainers = _context.Trainer
-                                   .Include(t => t.Speciality)
-                                   .OrderBy(t => t.FirstName)
-                                   .ThenBy(t => t.LastName);
+            int pageNumber = page ?? 1;
+            int pageSize = 10; 
+
+            var trainers = _context.Trainer.Include(t => t.Speciality).AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                trainers = trainers.Where(t => t.FirstName.Contains(searchString) || t.LastName.Contains(searchString));
+            }
+
+            var pagedTrainers = await trainers.OrderBy(t => t.LastName).ToPagedListAsync(pageNumber, pageSize);
+
+            var model = new TrainerSearchViewModelFilter
+            {
+                Items = pagedTrainers,
+                SearchString = searchString
+            };
 
             var certificationCenters = await _trainerService.GetCertificationCentersAsync();
             ViewBag.CertificationCenters = new SelectList(certificationCenters);
 
-            return View(await trainers.ToListAsync());
+            return View(model);
         }
+
 
         // GET: Trainers/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -183,16 +200,11 @@ namespace JuliePro.Controllers
         // GET: Trainers/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var trainer = await _context.Trainer
-                                        .Include(t => t.Speciality)
-                                        .Include(t => t.Certification)
-                                        .FirstOrDefaultAsync(t => t.Id == id);
-
+            var trainer = await _trainerService.GetByIdAsync(id);
             if (trainer == null)
             {
                 return NotFound();
             }
-
             return View(trainer);
         }
     }

@@ -1,4 +1,4 @@
-@model IEnumerable<Trainer>
+@model TrainerSearchViewModelFilter
 
 @{
     ViewData["Title"] = "Trainers Index";
@@ -12,7 +12,7 @@
 </p>
 
 <div class="card-container">
-    @foreach (var item in Model)
+    @foreach (var item in Model.Items)
     {
         <div class="card" data-id="@item.Id">
             <img src="/images/Trainers/@item.Photo" alt="@item.FirstName @item.LastName" class="card-img">
@@ -26,19 +26,70 @@
     }
 </div>
 
+<form id="searchForm" method="post" asp-action="Filter">
+    <input type="hidden" id="SelectedPageIndex" name="PageNumber" value="@Model.PageNumber" />
+</form>
+
+<div>
+    @* la pagination *@
+    <ul class="pagination">
+        @if (Model.Items.HasPreviousPage)
+        {
+            <li class="page-item" data-page-id="@(Model.Items.PageNumber - 1)">
+                <a class="page-link" href="#">Previous</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.Items.PageCount; i++)
+        {
+            <li class="page-item @(i == Model.Items.PageNumber ? "active" : "")" data-page-id="@i">
+                <a class="page-link" href="#">@i</a>
+            </li>
+        }
+
+        @if (Model.Items.HasNextPage)
+        {
+            <li class="page-item" data-page-id="@(Model.Items.PageNumber + 1)">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        }
+    </ul>
+</div>
+
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
             $('.card').hover(
                 function () {
-                    $(this).addClass('show');
+                    $(this).find('.card-aside').addClass('show');
                 },
                 function () {
-                    $(this).removeClass('show');
+                    $(this).find('.card-aside').removeClass('show');
                 }
             );
+
+            $('.pagination').on('click', '.page-item', function (event) {
+                event.preventDefault();
+
+                var pageId = $(this).data('page-id');
+                if (pageId !== undefined) {
+                    $('#SelectedPageIndex').val(pageId);
+                    $('#searchForm').submit();
+                }
+            });
         });
     </script>
 }
-

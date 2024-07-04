@@ -21,11 +21,11 @@ namespace JuliePro.Data
             modelBuilder.GenerateData();
         }
 
-        public DbSet<Speciality> Speciality { get; set; }
-        public DbSet<Trainer> Trainer { get; set; }
-        public DbSet<Customer> Customer { get; set; }
-        public DbSet<Objective> Objective { get; set; }
-        public DbSet<Certification> Certifications { get; set; }
+        public DbSet<Speciality>? Speciality { get; set; }
+        public DbSet<Trainer>? Trainer { get; set; }
+        public DbSet<Customer>? Customer { get; set; }
+        public DbSet<Objective>? Objective { get; set; }
+        public DbSet<Certification>? Certifications { get; set; }
 
     }
 }

@@ -6,7 +6,7 @@ namespace JuliePro.Models
     {
         public int Id { get; set; }
         [StringLength(15, MinimumLength = 5)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [Range(2, 10)]
         public double? LostWeightKg { get; set; }
         [Range(2, 45)]
@@ -14,6 +14,6 @@ namespace JuliePro.Models
         public DateTime? AchievedDate { get; set; }
 
         public int CustomerId { get; set; }
-        public virtual Customer Customer { get; set; }
+        public virtual Customer? Customer { get; set; }
     }
 }
